@@ -39,7 +39,7 @@ export default function LoginForm() {
             const res = await axios.post(`${BASE_URL}/api/auth/login`, { email, password }, { withCredentials: true });
             console.log(res.data?.message)
             const user = res.data?.user;
-            setErr("")
+            setErr('')
             dispatch(setUser(user))
             navigate('/user/dashboard')
         }

@@ -2,11 +2,11 @@
 
 @layer components {
     .btn {
-        @apply bg-white text-blue-900 px-4 py-1 font-semibold rounded hover:bg-black hover:text-white cursor-pointer transition duration-400 ease-in-out;
+        @apply bg-gradient-to-r from-cyan-400 to-emerald-400 hover:from-cyan-500 hover:to-emerald-500 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition-all duration-1000 ease-linear;
     }
 
     .navLink {
-        @apply rounded transition duration-100 ease-in-out hover:text-black;
+        @apply text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-red-500 to-orange-500 font-medium hover:underline;
     }
 
     .logoText {

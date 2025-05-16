@@ -4,6 +4,7 @@ import URLComponent from '../URLComponent';
 import axios from 'axios';
 import { BASE_URL } from '../../constants';
 import { setError, setLoading, setUrls } from '../../redux/urlSlice';
+import URLModel from './URLModel';
 
 function Dashboard() {
     const dispatch = useDispatch();
@@ -12,20 +13,23 @@ function Dashboard() {
     const [links, setLinks] = useState([])
 
     const fetchUrls = async () => {
+        dispatch(setLoading(true))
+        dispatch(setError(null));
+
         try {
-            dispatch(setLoading(true))
             const res = await axios.get(`${BASE_URL}/api/user/dashboard`, {
                 withCredentials: true
             });
-            dispatch(setLoading(false))
             const data = res.data?.urls;
             setLinks(data)
             dispatch(setUrls(data))
-            dispatch(setError(""));
+            dispatch(setError(null));
         } catch (error) {
-            dispatch(setLoading(false))
             const errMsg = error.response?.data?.message || "urls fetch failed.";
             dispatch(setError(errMsg))
+        }
+        finally {
+            dispatch(setLoading(false));
         }
     }
 
@@ -34,18 +38,24 @@ function Dashboard() {
             fetchUrls();
         }
     }, [isAuthenticated])
+
     return (
-        <div>
-            <p className='text-lg'>User : {user?.email}</p>
-            <URLComponent />
-            <h2 className="text-xl font-bold">Your Short URLs</h2>
+        <div className='bg-purple-400 py-10'>
+
             {loading && <p>Loading...</p>}
             {error && <p className="text-red-500">{error}</p>}
-            <ul>
-                {links.map(link => (
-                    <li key={link._id}>{link.originalUrl} - {link.shortUrl}</li>
-                ))}
-            </ul>
+
+            <URLComponent />
+
+            <div className='px-30 py-10'>
+                <h2 className="text-xl font-bold">Your Short URLs</h2>
+                <div className='flex '>
+                    {urls.map(link => (
+                        <URLModel link={link} />
+                    ))}
+                </div>
+            </div>
+
         </div>
 
     )

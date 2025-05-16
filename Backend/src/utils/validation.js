@@ -26,7 +26,7 @@ const validateLoginData = (req) => {
 };
 
 const validateUrlData = (req) => {
-    const { originalUrl, customUrl } = req.body;
+    const { originalUrl, shortUrl } = req.body;
 
     if (!originalUrl) {
         throw new Error("URL is required.");
@@ -36,7 +36,7 @@ const validateUrlData = (req) => {
         throw new Error("Not a valid URL.");
     }
 
-    if (customUrl && (customUrl.trim().length < 7 || customUrl.trim().length > 30)) {
+    if (shortUrl && (shortUrl.trim().length < 7 || shortUrl.trim().length > 30)) {
         throw new Error("Custom URL must be between 7 and 30 characters long.");
     }
 };

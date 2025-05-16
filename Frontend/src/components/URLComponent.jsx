@@ -1,47 +1,83 @@
-import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
-import validator from 'validator'; // Make sure to install this package: npm install validator
+import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import validator from 'validator';
+import axios from 'axios'
+import { BASE_URL } from "../constants"
+import { addListener } from '@reduxjs/toolkit';
+import { addUrl, setError, setLoading } from '../redux/urlSlice';
+
 
 function URLComponent() {
     const [url, setUrl] = useState('');
     const [customUrl, setCustomUrl] = useState('');
-    const [error, setError] = useState('');
-    const { user, isAuthenticated } = useSelector(state => state.user);
+    const [shortUrl, setShortUrl] = useState('');
+    const [err, setErr] = useState('');
+    const [copyButtonText, setCopyButtonText] = useState('Copy URL');
 
+    const dispatch = useDispatch();
+
+    const { user, isAuthenticated } = useSelector(state => state.user);
+    const [generated, setGenerated] = useState(false)
+    const { urls, loading, error } = useSelector(state => state.urls);
 
     const validateUrl = (inputUrl) => {
         if (!inputUrl.trim()) {
-            setError("URL is required.");
+            setErr("URL is required.");
             return false;
         }
         if (!validator.isURL(inputUrl)) {
-            setError("Please enter a valid URL.");
+            setErr("Please enter a valid URL.");
             return false;
         }
-        setError('');
+        setErr('');
         return true;
     };
 
     const handleShortUrl = async () => {
         if (!validateUrl(url)) return;
 
+        dispatch(setLoading(true));
+        dispatch(setError(null)); // Clear previous error
+
         try {
             const payload = {
                 originalUrl: url,
-                ...(isLoggedIn && customUrl.trim() && { customUrl: customUrl.trim() })
+                ...(isAuthenticated && customUrl.trim() && { shortUrl: customUrl.trim() })
             };
 
-            const res = await axios.post(`${BASE_URL}/api/url/shorten`, payload);
+            const res = await axios.post(`${BASE_URL}/api/url/shorten`, payload, {
+                withCredentials: true
+            });
 
-            console.log("Shortened URL:", res.data.shortUrl);
+            const resUrl = res.data?.shortUrl || "Couldn't generate short url.";
+            setShortUrl(resUrl);
+
+            dispatch(addUrl(res.data?.newUrl));
+            setGenerated(true);
+            setCopyButtonText("Copy URL");
         } catch (error) {
             const errMsg = error.response?.data?.message || "Shortening failed.";
-            setError(errMsg);
+            setErr(errMsg);
+            dispatch(setError(errMsg));
+        } finally {
+            dispatch(setLoading(false));
         }
     };
 
+
+    const handleCopyUrl = async () => {
+        try {
+            await navigator.clipboard.writeText(shortUrl);
+            setCopyButtonText("Copied!");
+            // setTimeout(() => setCopyButtonText("Copy URL"), 2000); // reset after 2s
+        } catch (err) {
+            console.error("Failed to copy:", err);
+        }
+    };
+
+
     return (
-        <div className='bg-blue-900 sm:my-10 my-5 sm:w-2/3 mx-2 rounded-lg sm:py-10 sm:px-10 px-5 py-5 sm:mx-auto text-white'>
+        <div className='bg-blue-900 sm:w-2/3 mx-2 rounded-lg sm:py-10 sm:px-10 px-5 py-5 sm:mx-auto text-white'>
             <div className="">
                 <label htmlFor="url" className="block text-3xl mb-4 font-medium">Paste your long link here</label>
                 <input
@@ -70,15 +106,39 @@ function URLComponent() {
                 </div>
             )}
 
+            {err && <p className="text-red-500 text-sm mt-2">{err}</p>}
             {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
 
             <button
-                className="mt-4 bg-white text-blue-900 px-5 py-2 rounded-md font-semibold hover:bg-gray-100 transition"
+                className="mt-4 bg-gradient-to-r from-cyan-500 to-emerald-500 hover:from-cyan-600 hover:to-emerald-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition-all"
                 onClick={handleShortUrl}
             >
                 Shorten URL
             </button>
-        </div>
+
+            {generated && <div className="mt-2">
+                <label htmlFor="customUrl" className="block text-lg mb-2 font-semibold">
+                    Shorten URL
+                </label>
+
+                <div className='flex '>
+                    <input
+                        type="text"
+                        id="shortUrl"
+                        value={shortUrl}
+                        contentEditable='false'
+                        readOnly
+                        className="block w-9/12 rounded-l bg-white px-3 py-2 text-base text-gray-900 placeholder:text-gray-400 sm:text-sm outline-none"
+                    />
+                    <button
+                        onClick={handleCopyUrl}
+                        className={`px-4 py-1 border-l-2 border-l-gray-400 font-bold text-blue-900 cursor-pointer transition duration-400 ease-in-out rounded-r w-3/12        ${copyButtonText === "Copied!" ? 'bg-gray-400 text-white' : 'bg-white hover:bg-gray-400 hover:text-white'}`}
+                    >
+                        {copyButtonText}
+                    </button>
+                </div>
+            </div>}
+        </div >
     );
 }
 

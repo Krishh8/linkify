@@ -1,4 +1,4 @@
-import { Menu, X } from 'lucide-react';
+import { LogOut, Menu, User, X } from 'lucide-react';
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, NavLink, useNavigate } from 'react-router'; // ✅ use react-router-dom
@@ -25,7 +25,7 @@ function Header() {
     }
 
     return (
-        <header className="bg-gradient-to-r from-blue-500  via-indigo-400 to-purple-600  text-white sm:px-20 px-6 py-3">
+        <header className="bg-gradient-to-r from-purple-700 via-indigo-600 to-blue-500 text-white p-4 shadow-md sm:px-20 px-6 py-3">
             <div className="flex justify-between items-center">
                 <Link href="/" className="text-4xl font-bold logoText">
                     linkify
@@ -50,10 +50,27 @@ function Header() {
                         }`
                     }>
                         Contact
+
                     </NavLink>
-                    {isAuthenticated ? <button onClick={handleLogout} className="btn">
-                        Log out
-                    </button> :
+
+                    {isAuthenticated ?
+                        <div className="relative group inline-block">
+                            <div className="text-lg cursor-pointer flex gap-1 items-center">
+                                <User />
+                                {user?.email}
+                            </div>
+                            <div className="bg-red-500 gap-2 items-center absolute top-full right-0 mt-2 hidden group-hover:flex z-10 rounded-lg shadow-md px-3 py-2">
+                                <LogOut className="w-5 h-5" />
+                                <button
+                                    onClick={handleLogout}
+                                    className="font-semibold hover:underline cursor-pointer"
+                                >
+                                    Log out
+                                </button>
+                            </div>
+                        </div>
+
+                        :
                         <>
                             <button onClick={() => navigate('/login')} className="btn">
                                 Log in

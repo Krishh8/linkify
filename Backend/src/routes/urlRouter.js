@@ -1,7 +1,7 @@
 const express = require('express');
 const { validateUrlData } = require('../utils/validation');
 const urlRouter = express.Router();
-const nanoid = require('nanoid');
+const { nanoid } = require('nanoid');
 const Url = require('../models/urlModel');
 const { BASE_URL } = require('../constants');
 const optionalAuth = require('../middlewares/optionalAuth');
@@ -12,31 +12,32 @@ const ONE_MONTH = 30 * 24 * 60 * 60 * 1000;
 urlRouter.post('/shorten', optionalAuth, async (req, res) => {
     try {
         validateUrlData(req);
-        const { originalUrl, customUrl } = req.body;
+        const { originalUrl, shortUrl } = req.body;
         const user = req.user;
         const isLoggedIn = user ? true : false;
 
-        if (customUrl) {
-            const existing = await Url.findOne({ shortUrl: customUrl });
+        if (shortUrl) {
+            const existing = await Url.findOne({ shortUrl });
             if (existing) {
-                return res.status(400).json({ message: "Custom URL already exists." });
+                return res.status(400).json({ success: false, message: "Custom URL already exists." });
             }
         }
 
-        const shortId = customUrl || nanoid(7);
+        const shortId = shortUrl || nanoid(7);
         const expirationTime = new Date(Date.now() + (isLoggedIn ? ONE_MONTH : THREE_DAYS));
 
         const newUrl = new Url({
             originalUrl,
             shortUrl: shortId,
-            customUrl,
             createdBy: user ? user._id : null,
             expiresAt: expirationTime,
         });
 
         await newUrl.save();
 
-        res.status(201).json({ shortUrl: `${BASE_URL}/${shortId}`, expiresAt: expirationTime });
+        res.status(201).json({
+            success: true, message: 'ShortUrl generated successfully.', shortUrl: `${BASE_URL}/api/url/${shortId}`, newUrl
+        });
 
     } catch (error) {
         return res.status(400).json({ success: false, message: error.message });
@@ -97,7 +98,13 @@ urlRouter.get('/stats/:shortUrl', async (req, res) => {
 
 urlRouter.put('/:id', async (req, res) => {
     try {
+        validateUrlData(req);
+
         const { id } = req.params;
+        if (!id) {
+            return res.status(404).json({ success: false, message: "URL not found" });
+        }
+
         const { originalUrl, shortUrl } = req.body;
 
         const updated = await Url.findByIdAndUpdate(
@@ -110,22 +117,27 @@ urlRouter.put('/:id', async (req, res) => {
             return res.status(404).json({ success: false, message: "URL not found" });
         }
 
-        res.status(200).json({ success: true, url: updated });
+        return res.status(200).json({ success: true, message: "URL updated successfully.", url: updated });
     } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
+        return res.status(500).json({ success: false, message: error.message });
     }
 });
 
 urlRouter.delete('/:id', async (req, res) => {
     try {
-        const deleted = await Url.findByIdAndDelete(req.params.id);
+        const { id } = req.params;
+        if (!id) {
+            return res.status(404).json({ success: false, message: "URL not found" });
+        }
+
+        const deleted = await Url.findByIdAndDelete(id);
         if (!deleted) {
             return res.status(404).json({ success: false, message: "URL not found" });
         }
 
-        res.status(200).json({ success: true, message: "URL deleted" });
+        return res.status(200).json({ success: true, message: "URL deleted successfully." });
     } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
+        return res.status(500).json({ success: false, message: error.message });
     }
 });
 
