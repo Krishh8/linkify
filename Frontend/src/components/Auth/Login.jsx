@@ -1,6 +1,5 @@
-import LoginForm from "./Auth/LoginForm";
-import loginImage from '../assets/login.svg';
-
+import LoginForm from "./LoginForm";
+import loginImage from '../../assets/login.svg';
 
 export default function Login() {
     return (
@@ -12,7 +11,7 @@ export default function Login() {
 
             {/* Login Panel */}
             <div className="w-full md:w-1/2 flex flex-col justify-center items-center px-6 py-20">
-                <h2 className="text-6xl font-medium text-blue-900 pb-10">linkify</h2>
+                <h2 className="text-6xl font-medium pb-10 logoText">linkify</h2>
                 <div className="w-full max-w-md">
                     <h2 className="text-3xl font-bold text-blue-900">Sign in to your account</h2>
                     <LoginForm />

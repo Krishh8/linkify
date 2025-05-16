@@ -1,8 +1,10 @@
-// components/Auth/LoginForm.jsx
-import { NavLink } from "react-router"
+import { NavLink, useNavigate } from "react-router"
 import useLoginForm from "../../hooks/useLoginForm"
 import EmailInput from "./EmailInput"
 import PasswordInput from "./PasswordInput"
+import { BASE_URL } from "../../constants"
+import { useState } from "react"
+import axios from "axios"
 
 export default function SignUpForm() {
     const {
@@ -19,18 +21,32 @@ export default function SignUpForm() {
         validateForm,
     } = useLoginForm()
 
-    const handleSubmit = (e) => {
+    const navigate = useNavigate()
+    const [err, setErr] = useState('')
+
+    const handleSubmit = async (e) => {
         e.preventDefault()
         setTouched({ email: true, password: true })
 
-        if (validateForm()) {
+        if (!validateForm()) return;
+
+        try {
             console.log("Submitting:", { email, password })
-            // Add your login logic here
+            const res = await axios.post(`${BASE_URL}/api/auth/signup`, { email, password });
+            console.log(res.data?.message)
+            setErr("")
+            return navigate('/login');
+        }
+        catch (error) {
+            const errMsg = error.response?.data?.message || "Sign up Failed.";
+            setErr(errMsg)
         }
     }
 
     return (
         <form onSubmit={handleSubmit} className="mt-8 space-y-6">
+            {err && <p className="text-red-500 text-sm mb-1">{err}</p>}
+
             <EmailInput
                 value={email}
                 onChange={handleEmailChange}

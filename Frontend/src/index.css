@@ -1,1 +1,15 @@
 @import "tailwindcss";
+
+@layer components {
+    .btn {
+        @apply bg-white text-blue-900 px-4 py-1 font-semibold rounded hover:bg-black hover:text-white cursor-pointer transition duration-400 ease-in-out;
+    }
+
+    .navLink {
+        @apply rounded transition duration-100 ease-in-out hover:text-black;
+    }
+
+    .logoText {
+        @apply bg-gradient-to-r from-yellow-500 via-orange-400 to-red-600 text-transparent bg-clip-text
+    }
+}

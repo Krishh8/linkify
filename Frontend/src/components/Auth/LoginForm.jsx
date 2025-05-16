@@ -1,8 +1,13 @@
 // components/Auth/LoginForm.jsx
-import { NavLink } from "react-router"
+import { NavLink, useNavigate } from "react-router"
 import useLoginForm from "../../hooks/useLoginForm"
 import EmailInput from "./EmailInput"
 import PasswordInput from "./PasswordInput"
+import axios from 'axios'
+import { BASE_URL } from "../../constants"
+import { useState } from "react"
+import { useDispatch } from "react-redux"
+import { setUser } from "../../redux/userSlice"
 
 export default function LoginForm() {
     const {
@@ -19,18 +24,34 @@ export default function LoginForm() {
         validateForm,
     } = useLoginForm()
 
-    const handleSubmit = (e) => {
+    const navigate = useNavigate()
+    const dispatch = useDispatch()
+    const [err, setErr] = useState('')
+
+    const handleSubmit = async (e) => {
         e.preventDefault()
         setTouched({ email: true, password: true })
 
-        if (validateForm()) {
+        if (!validateForm()) return;
+
+        try {
             console.log("Submitting:", { email, password })
-            // Add your login logic here
+            const res = await axios.post(`${BASE_URL}/api/auth/login`, { email, password }, { withCredentials: true });
+            console.log(res.data?.message)
+            const user = res.data?.user;
+            setErr("")
+            dispatch(setUser(user))
+            navigate('/user/dashboard')
+        }
+        catch (error) {
+            const errMsg = error.response?.data?.message || "Login Failed.";
+            setErr(errMsg)
         }
     }
 
     return (
         <form onSubmit={handleSubmit} className="mt-8 space-y-6">
+            {err && <p className="text-red-500 text-sm mb-1">{err}</p>}
             <EmailInput
                 value={email}
                 onChange={handleEmailChange}
