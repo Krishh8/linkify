@@ -8,6 +8,7 @@ import { BASE_URL } from '../constants';
 
 function Header() {
     const [isOpen, setIsOpen] = useState(false);
+    const [drop, setDrop] = useState(false);
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const { user, isAuthenticated } = useSelector(state => state.user);
@@ -25,7 +26,7 @@ function Header() {
     }
 
     return (
-        <header className="bg-gradient-to-r from-purple-700 via-indigo-600 to-blue-500 text-white p-4 shadow-md sm:px-20 px-6 py-3">
+        <header className="bg-gradient-to-b from-purple-700  to-blue-600 text-white p-4 shadow-md sm:px-20 px-6 py-3">
             <div className="flex justify-between items-center">
                 <Link href="/" className="text-4xl font-bold logoText">
                     linkify
@@ -33,20 +34,20 @@ function Header() {
 
                 {/* Desktop Navigation */}
                 <nav className="hidden md:flex gap-6 items-center">
-                    {isAuthenticated && <NavLink to='user/dashboard' className={({ isActive }) => `navLink ${isActive ? 'text-black font-medium underline underline-offset-4' : ''
+                    {isAuthenticated && <NavLink to='user/dashboard' className={({ isActive }) => `navLink ${isActive ? 'text-yellow-300 font-medium underline underline-offset-4' : ''
                         }`
                     }>
                         Dashboard
                     </NavLink>}
-                    <NavLink to="/" className={({ isActive }) => `navLink ${isActive ? 'text-black font-medium underline underline-offset-4' : ''}`}>
+                    <NavLink to="/" className={({ isActive }) => `navLink ${isActive ? 'text-yellow-300 font-medium underline underline-offset-4' : ''}`}>
                         Home
                     </NavLink>
-                    <NavLink to="/about" className={({ isActive }) => `navLink ${isActive ? 'text-black font-medium underline underline-offset-4' : ''
+                    <NavLink to="/about" className={({ isActive }) => `navLink ${isActive ? 'text-yellow-300 font-medium underline underline-offset-4' : ''
                         }`
                     }>
                         About Us
                     </NavLink>
-                    <NavLink to="/contact" className={({ isActive }) => `navLink ${isActive ? 'text-black font-medium underline underline-offset-4' : ''
+                    <NavLink to="/contact" className={({ isActive }) => `navLink ${isActive ? 'text-yellow-300 font-medium underline underline-offset-4' : ''
                         }`
                     }>
                         Contact
@@ -54,22 +55,23 @@ function Header() {
                     </NavLink>
 
                     {isAuthenticated ?
-                        <div className="relative group inline-block">
-                            <div className="text-lg cursor-pointer flex gap-1 items-center">
+                        <div className="relative">
+                            <button onClick={() => setDrop(prev => !prev)} className="text-lg focus:ring-2 focus:text-yellow-500 focus:ring-yellow-500 rounded-[50%] p-1  cursor-pointer flex items-center">
                                 <User />
-                                {user?.email}
-                            </div>
-                            <div className="bg-red-500 gap-2 items-center absolute top-full right-0 mt-2 hidden group-hover:flex z-10 rounded-lg shadow-md px-3 py-2">
-                                <LogOut className="w-5 h-5" />
-                                <button
-                                    onClick={handleLogout}
-                                    className="font-semibold hover:underline cursor-pointer"
-                                >
-                                    Log out
-                                </button>
-                            </div>
-                        </div>
+                            </button>
 
+                            {drop &&
+                                <div className='absolute shadow-md bg-gradient-to-r from-gray-700 via-gray-800 to-gray-900 mt-2 rounded-md -left-33'>
+                                    <p className='border-b-2 px-5 py-2 text-gray-200'>{user.email}</p>
+                                    <button
+                                        onClick={handleLogout}
+                                        className="px-5 py-2 flex items-center text-gray-200 font-semibold rounded gap-2 "
+                                    >
+                                        Log out
+                                    </button>
+                                </div>
+                            }
+                        </div>
                         :
                         <>
                             <button onClick={() => navigate('/login')} className="btn">
