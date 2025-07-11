@@ -5,6 +5,7 @@ const { nanoid } = require('nanoid');
 const Url = require('../models/urlModel');
 const { BASE_URL } = require('../constants');
 const optionalAuth = require('../middlewares/optionalAuth');
+const userAuth = require('../middlewares/auth');
 
 const THREE_DAYS = 3 * 24 * 60 * 60 * 1000;
 const ONE_MONTH = 30 * 24 * 60 * 60 * 1000;
@@ -69,7 +70,7 @@ urlRouter.get('/:shortUrl', async (req, res) => {
     }
 })
 
-urlRouter.get('/stats/:shortUrl', async (req, res) => {
+urlRouter.get('/stats/:shortUrl', userAuth, async (req, res) => {
     try {
         const { shortUrl } = req.params;
 
@@ -96,7 +97,7 @@ urlRouter.get('/stats/:shortUrl', async (req, res) => {
     }
 })
 
-urlRouter.put('/:id', async (req, res) => {
+urlRouter.put('/:id', userAuth, async (req, res) => {
     try {
         validateUrlData(req);
 
@@ -123,7 +124,7 @@ urlRouter.put('/:id', async (req, res) => {
     }
 });
 
-urlRouter.delete('/:id', async (req, res) => {
+urlRouter.delete('/:id', userAuth, async (req, res) => {
     try {
         const { id } = req.params;
         if (!id) {

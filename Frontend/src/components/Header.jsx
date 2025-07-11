@@ -15,7 +15,7 @@ function Header() {
 
     const handleLogout = async () => {
         try {
-            const res = await axios.post(`${BASE_URL}/api/auth/logout`);
+            const res = await axios.post(`${BASE_URL}/api/auth/logout`, {}, { withCredentials: true });
             console.log(res.data?.message)
             dispatch(clearUser())
             return navigate('/')

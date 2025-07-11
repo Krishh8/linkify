@@ -35,7 +35,6 @@ export default function LoginForm() {
         if (!validateForm()) return;
 
         try {
-            console.log("Submitting:", { email, password })
             const res = await axios.post(`${BASE_URL}/api/auth/login`, { email, password }, { withCredentials: true });
             console.log(res.data?.message)
             const user = res.data?.user;

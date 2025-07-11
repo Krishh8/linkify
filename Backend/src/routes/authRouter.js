@@ -2,6 +2,7 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const User = require('../models/userModel');
 const { validateSignUpData, validateLoginData } = require('../utils/validation');
+const userAuth = require('../middlewares/auth');
 const authRouter = express.Router();
 
 authRouter.post('/signup', async (req, res) => {
@@ -38,7 +39,7 @@ authRouter.post('/login', async (req, res) => {
         const isPasswordValid = await user.validatePassword(password);
         if (isPasswordValid) {
             const token = await user.getJWT();
-            res.cookie('token', token, { expires: new Date(Date.now() + 7 * 24 * 3600000), httpOnly: true, secure: false, sameSite: 'lax', })
+            res.cookie('token', token, { expires: new Date(Date.now() + 7 * 24 * 3600000), httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax', })
             return res.status(200).json({ success: 'true', message: "Login successfully.", user: user });
         }
         else {
@@ -50,8 +51,15 @@ authRouter.post('/login', async (req, res) => {
 })
 
 authRouter.post('/logout', (req, res) => {
-    res.cookie('token', null, { expires: new Date(Date.now()) })
+    res.clearCookie('token');
     return res.status(200).json({ success: 'true', message: "Logout successfully." });
 })
+
+authRouter.get('/me', userAuth, async (req, res) => {
+    return res.status(200).json({
+        success: true,
+        user: req.user,
+    });
+});
 
 module.exports = authRouter;

@@ -32,7 +32,7 @@ export default function SignUpForm() {
 
         try {
             console.log("Submitting:", { email, password })
-            const res = await axios.post(`${BASE_URL}/api/auth/signup`, { email, password });
+            const res = await axios.post(`${BASE_URL}/api/auth/signup`, { email, password }, { withCredentials: true });
             console.log(res.data?.message)
             setErr("")
             return navigate('/login');

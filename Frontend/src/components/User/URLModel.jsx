@@ -20,7 +20,7 @@ const URLModel = ({ link }) => {
         dispatch(setLoading(true))
         dispatch(setError(null))
         try {
-            const res = await axios.put(`${BASE_URL}/api/url/${_id}`, { originalUrl: orgUrl, shortUrl: shUrl })
+            const res = await axios.put(`${BASE_URL}/api/url/${_id}`, { originalUrl: orgUrl, shortUrl: shUrl }, { withCredentials: true })
             const updated = res.data?.url
             console.log(res.data?.message)
             dispatch(editUrl(updated))
@@ -48,7 +48,7 @@ const URLModel = ({ link }) => {
         dispatch(setLoading(true))
         dispatch(setError(null))
         try {
-            const res = await axios.delete(`${BASE_URL}/api/url/${_id}`)
+            const res = await axios.delete(`${BASE_URL}/api/url/${_id}`, { withCredentials: true })
             console.log(res.data?.message)
             dispatch(deleteUrl(_id))
             dispatch(setError(null))
@@ -60,8 +60,8 @@ const URLModel = ({ link }) => {
         }
     }
 
-    const copyToClipboard = () => {
-        navigator.clipboard.writeText(`${BASE_URL}/${shortUrl}`)
+    const copyToClipboard = (text) => {
+        navigator.clipboard.writeText(text)
     }
 
     const formatDate = (dateString) => {
@@ -99,11 +99,11 @@ const URLModel = ({ link }) => {
                 </div>
             )} */}
 
-            <div className="p-4 pb-2 border-b border-0">
+            <div className="p-4 pb-2 border-b border-0 border-yellow-200">
                 <div className="flex justify-between items-center">
-                    <h3 className="text-lg font-medium text-gray-100">Shortened URL</h3>
-                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 border">
-                        <Clock className="w-3.5" />
+                    <h3 className="text-lg font-medium text-yellow-200">Shortened URL</h3>
+                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-gray-800 border">
+                        <Clock className="w-3.5 text-gray-900" />
                         {formatDate(expiresAt)}
                     </span>
                 </div>
@@ -113,7 +113,7 @@ const URLModel = ({ link }) => {
                 {editable ? (
                     <>
                         <div className="space-y-2">
-                            <label htmlFor="orgUrl" className="block text-sm font-medium text-white">
+                            <label htmlFor="orgUrl" className="block text-sm font-medium text-yellow-300">
                                 Original URL
                             </label>
                             <input
@@ -122,11 +122,11 @@ const URLModel = ({ link }) => {
                                 value={orgUrl}
                                 onChange={(e) => setOrgUrl(e.target.value)}
                                 placeholder="https://example.com"
-                                className="w-full px-3 py-2 border border-gray-100 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-500 focus:border-blue-500"
+                                className="w-full px-3 py-2 border border-gray-100 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-500 focus:border-blue-500 text-white"
                             />
                         </div>
                         <div className="space-y-2">
-                            <label htmlFor="shUrl" className="block text-sm font-medium text-white">
+                            <label htmlFor="shUrl" className="block text-sm font-medium text-yellow-300">
                                 Short URL
                             </label>
                             <input
@@ -135,7 +135,7 @@ const URLModel = ({ link }) => {
                                 value={shUrl}
                                 onChange={(e) => setShUrl(e.target.value)}
                                 placeholder="custom-url"
-                                className="w-full px-3 py-2 border border-gray-100 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-500 focus:border-blue-500"
+                                className="w-full px-3 py-2 border border-gray-100 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-500 focus:border-blue-500 text-white"
                             />
                         </div>
                         <div className="flex pt-2">
@@ -145,17 +145,17 @@ const URLModel = ({ link }) => {
                 ) : (
                     <>
                         <div className="space-y-1">
-                            <label className="block text-sm font-medium text-white">Original URL</label>
+                            <label className="block text-sm font-medium text-yellow-300">Original URL</label>
                             <div className="p-2 bg-gray-50 rounded-md text-sm break-all border border-gray-100">{originalUrl}</div>
                         </div>
                         <div className="space-y-1">
-                            <label className="block text-sm font-medium text-white">Short URL</label>
+                            <label className="block text-sm font-medium text-yellow-300">Short URL</label>
                             <div className="flex items-center gap-2">
                                 <div className="p-2 bg-blue-50 rounded-md text-sm font-medium flex-1 break-all border border-blue-100">
                                     {`${BASE_URL}/api/url/${shortUrl}`}
                                 </div>
                                 <button
-                                    onClick={copyToClipboard}
+                                    onClick={() => copyToClipboard(`${BASE_URL}/api/url/${shortUrl}`)}
                                     title="Copy to clipboard"
                                     className="p-2 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
                                 >
@@ -177,7 +177,7 @@ const URLModel = ({ link }) => {
                             </div>
                         </div>
                         <div className="flex items-center gap-2 pt-2">
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-yellow-300 text-gray-800">
                                 {clickCount} {clickCount === 1 ? "click" : "clicks"}
                             </span>
                         </div>
