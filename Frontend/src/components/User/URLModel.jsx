@@ -94,7 +94,7 @@ const URLModel = ({ link }) => {
         // <div className="border rounded-lg my-2 sm:my-0 shadow-sm w-full sm:w-1/2 md:w-1/3">
         <div className="flex flex-col rounded-lg hover:shadow-2xl shadow-gray-900 p-2 shadow-md transition-all">
             {/* {error && (
-                <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-4">
+                <div className="bg-red-50 border-l-4 border-red-400 p-4 mb-4">
                     <p className="text-red-700">{error}</p>
                 </div>
             )} */}
@@ -218,7 +218,7 @@ const URLModel = ({ link }) => {
                         <button
                             onClick={handleDelete}
                             disabled={loading}
-                            className="flex-1 flex justify-center items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring focus:ring-offset-1 focus:ring-red-500 disabled:opacity-50"
+                            className="flex-1 flex justify-center items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring focus:ring-offset-1 focus:ring-red-400 disabled:opacity-50"
                         >
 
                             Delete

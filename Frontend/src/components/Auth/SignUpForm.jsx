@@ -45,7 +45,7 @@ export default function SignUpForm() {
 
     return (
         <form onSubmit={handleSubmit} className="mt-8 space-y-6">
-            {err && <p className="text-red-500 text-sm mb-1">{err}</p>}
+            {err && <p className="text-red-400 text-sm mb-1">{err}</p>}
 
             <EmailInput
                 value={email}

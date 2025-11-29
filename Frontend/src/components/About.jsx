@@ -1,10 +1,9 @@
-import React from 'react'
 import { aboutData } from '../constants'
 import Box from './Box'
 
 function About() {
     return (
-        <div className='bodyGradient min-h-screen'>
+        <div className='bodyGradient min-h-screen flex-col justify-center items-center'>
             <div className="max-w-3xl p-5 sm:mx-auto">
                 <h1 className="text-4xl font-bold mb-6 text-center text-white">About<span className='logoText'> Linkify</span></h1>
                 <p className="mb-4 text-lg text-gray-200">

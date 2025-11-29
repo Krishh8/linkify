@@ -4,9 +4,9 @@ import signupImage from '../../assets/signup.svg';
 
 export default function SignUp() {
     return (
-        <div className="flex min-h-screen">
+        <div className="flex min-h-screen justify-center items-center">
             {/* Left Panel */}
-            <div className="hidden md:block w-1/2 border-r-2 border-r-blue-900">
+            <div className="hidden md:flex justify-center items-center  border-r-2 border-r-blue-900 h-screen w-1/2">
                 <img src={signupImage} alt="signup" className="h-full w-full object-fill" />
             </div>
 

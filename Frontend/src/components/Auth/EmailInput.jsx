@@ -12,10 +12,10 @@ export default function EmailInput({ value, onChange, onBlur, error, touched }) 
                 placeholder="Enter your email"
                 onChange={(e) => onChange(e.target.value)}
                 onBlur={onBlur}
-                className={`block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 ${error && touched ? "outline-red-500" : "outline-blue-400"
+                className={`block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 ${error && touched ? "outline-red-400" : "outline-blue-400"
                     } placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-blue-700 sm:text-sm/6`}
             />
-            {error && touched && <p className="text-red-500 text-sm mt-1">{error}</p>}
+            {error && touched && <p className="text-red-400 text-sm mt-1">{error}</p>}
         </div>
     )
 }

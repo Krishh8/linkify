@@ -26,7 +26,7 @@ function Header() {
     }
 
     return (
-        <header className="bg-gradient-to-b from-purple-700  to-blue-600 text-white p-4 shadow-md sm:px-20 px-6 py-3">
+        <header className="bg-gradient-to-b from-black to-gray-900 text-white shadow-2xl sm:px-20 px-6 py-4">
             <div className="flex justify-between items-center">
                 <Link href="/" className="text-4xl font-bold logoText">
                     linkify

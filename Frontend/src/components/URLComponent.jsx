@@ -79,7 +79,7 @@ function URLComponent() {
 
     return (
         <motion.div whileHover={{ scale: 1.01 }}>
-            <div className='bg-gradient-to-b from-blue-400 to-pink-400 shadow-2xl shadow-pink-400 sm:w-2/3 mx-2 rounded-lg sm:py-10 sm:px-10 px-5 py-5 sm:mx-auto text-white'>
+            <div className='bg-gradient-to-b from-gray-700 to-gray-800 shadow-lg shadow-gray-600 sm:w-2/3 mx-2 rounded-lg sm:py-10 sm:px-10 px-5 py-5 sm:mx-auto text-white'>
                 <div className="">
                     <label htmlFor="url" className="block text-3xl mb-4 font-medium">Paste your long link here</label>
                     <input
@@ -108,11 +108,11 @@ function URLComponent() {
                     </div>
                 )}
 
-                {err && <p className="text-red-500 text-sm mt-2">{err}</p>}
-                {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+                {err && <p className="text-red-400 text-sm mt-2">{err}</p>}
+                {error && <p className="text-red-400 text-sm mt-2">{error}</p>}
 
                 <button
-                    className="mt-4 bg-gradient-to-r from-cyan-400 to-emerald-500 hover:from-emerald-500 hover:to-cyan-400 text-white font-semibold px-6 py-2 rounded shadow-md transition-all"
+                    className="mt-4 btn"
                     onClick={handleShortUrl}
                 >
                     Shorten URL

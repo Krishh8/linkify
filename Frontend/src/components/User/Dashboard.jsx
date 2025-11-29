@@ -44,7 +44,7 @@ function Dashboard() {
         <div className='bodyGradient py-10 px-4 min-h-screen'>
 
             {loading && <p>Loading...</p>}
-            {/* {error && <p className="text-red-500">{error}</p>} */}
+            {/* {error && <p className="text-red-400">{error}</p>} */}
             <div className='mb-20'>
                 <URLComponent />
             </div>
