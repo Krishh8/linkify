@@ -49,8 +49,8 @@ function Dashboard() {
                 <URLComponent />
             </div>
 
-            <div className='p-3 sm:px-6 sm:py-10 md:mx-5 lg:mx-10 rounded-md bg-gradient-to-b from-pink-500 to-indigo-400 shadow-2xl shadow-indigo-400'>
-                <h2 className="text-2xl font-bold mb-4 text-amber-200">Your Short URLs</h2>
+            <div className='p-3 sm:px-6 sm:py-10 md:mx-5 lg:mx-10 rounded-md bg-gradient-to-br from-black to-gray-900 shadow-md shadow-amber-700'>
+                <h2 className="text-3xl font-bold mb-4 text-amber-400">Your Short URLs</h2>
 
                 <div className='grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'>
                     {urls.map((link, index) => (

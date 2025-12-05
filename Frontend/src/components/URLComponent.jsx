@@ -79,16 +79,16 @@ function URLComponent() {
 
     return (
         <motion.div whileHover={{ scale: 1.01 }}>
-            <div className='bg-gradient-to-b from-gray-700 to-gray-800 shadow-lg shadow-gray-600 sm:w-2/3 mx-2 rounded-lg sm:py-10 sm:px-10 px-5 py-5 sm:mx-auto text-white'>
+            <div className='bg-gradient-to-b from-gray-700 to-gray-800 shadow-lg shadow-gray-600 sm:w-2/3 mx-2 rounded-lg sm:py-10 sm:px-10 px-5 py-5 sm:mx-auto'>
                 <div className="">
-                    <label htmlFor="url" className="block text-3xl mb-4 font-medium">Paste your long link here</label>
+                    <label htmlFor="url" className="block text-3xl mb-4 py-1 font-medium headingText">Paste your long link here</label>
                     <input
                         type="url"
                         id="url"
                         value={url}
                         placeholder="e.g. https://sample.com/my-long-url"
                         onChange={(e) => setUrl(e.target.value)}
-                        className="block w-full rounded-md bg-white px-3 py-2.5 text-base text-gray-900 placeholder:text-gray-400 focus:outline-blue-700 sm:text-sm"
+                        className="block w-full rounded-md bg-amber-50 px-3 py-2.5 text-base text-amber-700 placeholder:text-gray-400  focus:outline-none focus:ring focus:ring-amber-300 sm:text-sm"
                     />
                 </div>
 
@@ -103,7 +103,7 @@ function URLComponent() {
                             value={customUrl}
                             onChange={(e) => setCustomUrl(e.target.value)}
                             placeholder="e.g. my-awesome-link"
-                            className="block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 placeholder:text-gray-400 focus:outline-blue-700 sm:text-sm"
+                            className="block w-full rounded-md bg-amber-50 px-3 py-2.5 text-base text-amber-700 placeholder:text-gray-400  focus:outline-none focus:ring focus:ring-amber-300 sm:text-sm"
                         />
                     </div>
                 )}

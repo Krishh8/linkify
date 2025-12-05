@@ -2,11 +2,11 @@
 
 @layer components {
     .btn {
-        @apply bg-gradient-to-tl from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-500 text-white font-semibold py-2 px-6 rounded-lg shadow-md transition-all duration-5000 ease-linear cursor-pointer;
+        @apply bg-gradient-to-br from-amber-300 to-yellow-400 hover:from-amber-400 hover:to-yellow-500 text-gray-900 font-semibold py-2 px-6 rounded-lg shadow-lg transition-all duration-300 ease-in-out hover:scale-105;
     }
 
     .navLink {
-        @apply text-white font-medium hover:underline underline-offset-1;
+        @apply font-medium hover:underline underline-offset-4 text-amber-100;
     }
 
     .logoText {
@@ -15,5 +15,13 @@
 
     .bodyGradient {
         @apply bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900
+    }
+
+    .headingText {
+        @apply text-amber-400
+    }
+
+    .subHeadingText {
+        @apply text-amber-100
     }
 }

@@ -34,7 +34,7 @@ function Header() {
 
                 {/* Desktop Navigation */}
                 <nav className="hidden md:flex gap-6 items-center">
-                    {isAuthenticated && <NavLink to='user/dashboard' className={({ isActive }) => `navLink ${isActive ? 'text-yellow-300 font-medium underline underline-offset-4' : ''
+                    {isAuthenticated && <NavLink to='user/dashboard' className={({ isActive }) => `navLink transition-all duration-300  ${isActive ? 'text-yellow-300 font-medium underline underline-offset-4' : ''
                         }`
                     }>
                         Dashboard

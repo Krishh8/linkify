@@ -15,12 +15,15 @@ const userSchema = new mongoose.Schema({
             if (!validator.isEmail(value)) {
                 throw new Error("Invalid Email");
             }
-        }
+        },
     },
     password: {
         type: String,
         required: true,
     },
+    isVerified: { type: Boolean, default: false },
+    verificationToken: String,
+    verificationTokenExpires: Date,
 })
 
 userSchema.methods.getJWT = async function () {

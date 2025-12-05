@@ -15,10 +15,15 @@ import PublicRoute from './components/Auth/PublicRoute.jsx';
 import PrivateRoute from './components/Auth/PrivateRoute.jsx';
 
 import { Provider, useDispatch, useSelector } from 'react-redux';
-import { store } from './redux/store.js';
+import { persistor, store } from './redux/store.js';
 import axios from 'axios';
 import { clearUser, setUser } from './redux/userSlice.js';
 import { BASE_URL } from './constants.js';
+import ResetPassword from './components/Auth/ResetPassword.jsx';
+import ForgotPassword from './components/Auth/ForgotPassword.jsx';
+import VerifyEmail from './components/Auth/VerifyEmail.jsx';
+import { PersistGate } from 'redux-persist/integration/react';
+import { ToastContainer } from 'react-toastify';
 
 const LoadApp = () => {
   const dispatch = useDispatch();
@@ -74,6 +79,30 @@ const LoadApp = () => {
             </PublicRoute>
           }
         />
+        <Route
+          path="/forgot-password"
+          element={
+            <PublicRoute>
+              <ForgotPassword />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/reset-password"
+          element={
+            <PublicRoute>
+              <ResetPassword />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/verify-email/:token"
+          element={
+            <PublicRoute>
+              <VerifyEmail />
+            </PublicRoute>
+          }
+        />
 
         <Route path="*" element={<NotFound />} />
       </Routes>
@@ -85,7 +114,10 @@ const LoadApp = () => {
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <Provider store={store}>
-      <LoadApp />
+      <ToastContainer />
+      <PersistGate loading={null} persistor={persistor}>
+        <LoadApp />
+      </PersistGate>
     </Provider>
   </StrictMode>
 );

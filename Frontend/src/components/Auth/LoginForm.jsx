@@ -1,4 +1,3 @@
-// components/Auth/LoginForm.jsx
 import { NavLink, useNavigate } from "react-router"
 import useLoginForm from "../../hooks/useLoginForm"
 import EmailInput from "./EmailInput"
@@ -27,6 +26,7 @@ export default function LoginForm() {
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const [err, setErr] = useState('')
+    const [showResend, setShowResend] = useState(false)  // NEW
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -36,21 +36,47 @@ export default function LoginForm() {
 
         try {
             const res = await axios.post(`${BASE_URL}/api/auth/login`, { email, password }, { withCredentials: true });
-            console.log(res.data?.message)
+
             const user = res.data?.user;
             setErr('')
+            setShowResend(false)
             dispatch(setUser(user))
-            navigate('/user/dashboard')
+            navigate('/user/dashboard', { replace: true })
         }
         catch (error) {
             const errMsg = error.response?.data?.message || "Login Failed.";
             setErr(errMsg)
+
+            if (errMsg === "Please verify your email first") {
+                setShowResend(true);   // Display resend button
+            }
         }
     }
 
+    const handleResend = async () => {
+        try {
+            const response = await axios.post(`${BASE_URL}/api/auth/send-email`, { email });
+            alert(response.data.message);
+        } catch (error) {
+            alert(error.response?.data?.message || "Failed to resend email");
+        }
+    };
+
     return (
         <form onSubmit={handleSubmit} className="mt-8 space-y-6">
+
             {err && <p className="text-red-400 text-sm mb-1">{err}</p>}
+
+            {showResend && (
+                <button
+                    type="button"
+                    onClick={handleResend}
+                    className="text-blue-900 underline underline-offset-4 hover:font-medium"
+                >
+                    Resend verification email
+                </button>
+            )}
+
             <EmailInput
                 value={email}
                 onChange={handleEmailChange}

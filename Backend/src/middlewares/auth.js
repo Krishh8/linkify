@@ -14,6 +14,9 @@ const userAuth = async (req, res, next) => {
         if (!user) {
             throw new Error("Not valid user.");
         }
+        if (!user.isVerified) {
+            return res.status(401).json({ message: "Account not verified" });
+        }
         req.user = user;
         next();
     } catch (error) {
