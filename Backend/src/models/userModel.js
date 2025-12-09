@@ -24,11 +24,13 @@ const userSchema = new mongoose.Schema({
     isVerified: { type: Boolean, default: false },
     verificationToken: String,
     verificationTokenExpires: Date,
+    resetPasswordToken: String,
+    resetPasswordExpires: Date,
 })
 
-userSchema.methods.getJWT = async function () {
+userSchema.methods.getJWT = function () {
     const user = this;
-    const token = await jwt.sign({ _id: user._id }, process.env.JWT_SECRET_KEY, { expiresIn: '7d' });
+    const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET_KEY, { expiresIn: '7d' });
     return token;
 }
 

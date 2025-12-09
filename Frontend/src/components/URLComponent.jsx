@@ -1,36 +1,35 @@
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import validator from 'validator';
-import axios from 'axios'
-import { BASE_URL } from "../constants"
-import { addListener } from '@reduxjs/toolkit';
+import axios from 'axios';
+import { BASE_URL } from "../constants";
 import { addUrl, setError, setLoading } from '../redux/urlSlice';
-import { motion } from 'motion/react';
+import { showToast } from '../utils/toast';
 
 
 function URLComponent() {
     const [url, setUrl] = useState('');
     const [customUrl, setCustomUrl] = useState('');
     const [shortUrl, setShortUrl] = useState('');
-    const [err, setErr] = useState('');
+    const [localError, setLocalError] = useState('');
     const [copyButtonText, setCopyButtonText] = useState('Copy URL');
 
     const dispatch = useDispatch();
 
-    const { user, isAuthenticated } = useSelector(state => state.user);
+    const { isAuthenticated } = useSelector(state => state.user);
     const [generated, setGenerated] = useState(false)
-    const { urls, loading, error } = useSelector(state => state.urls);
+    const { error } = useSelector(state => state.urls);
 
     const validateUrl = (inputUrl) => {
         if (!inputUrl.trim()) {
-            setErr("URL is required.");
+            setLocalError("URL is required.");
             return false;
         }
         if (!validator.isURL(inputUrl)) {
-            setErr("Please enter a valid URL.");
+            setLocalError("Please enter a valid URL.");
             return false;
         }
-        setErr('');
+        setLocalError('');
         return true;
     };
 
@@ -56,10 +55,10 @@ function URLComponent() {
             dispatch(addUrl(res.data?.newUrl));
             setGenerated(true);
             setCopyButtonText("Copy URL");
-        } catch (error) {
-            const errMsg = error.response?.data?.message || "Shortening failed.";
-            setErr(errMsg);
-            dispatch(setError(errMsg));
+        } catch (err) {
+            const errorMsg = err.response?.data?.message || "Shortening failed.";
+            setLocalError(errorMsg);
+            dispatch(setError(errorMsg));
         } finally {
             dispatch(setLoading(false));
         }
@@ -70,16 +69,22 @@ function URLComponent() {
         try {
             await navigator.clipboard.writeText(shortUrl);
             setCopyButtonText("Copied!");
-            // setTimeout(() => setCopyButtonText("Copy URL"), 2000); // reset after 2s
+            showToast({
+                type: "success",
+                message: "URL copied to clipboard.",
+            });
         } catch (err) {
-            console.error("Failed to copy:", err);
+            const errorMsg = err.response?.data?.message || "Failed to copy URL.";
+            showToast({
+                type: "error",
+                message: errorMsg,
+            });
         }
     };
 
-
     return (
-        <motion.div whileHover={{ scale: 1.01 }}>
-            <div className='bg-gradient-to-b from-gray-700 to-gray-800 shadow-lg shadow-gray-600 sm:w-2/3 mx-2 rounded-lg sm:py-10 sm:px-10 px-5 py-5 sm:mx-auto'>
+        <div>
+            <div className='bg-gradient-to-b from-gray-800 to-gray-900 shadow-lg shadow-gray-700 sm:w-2/3 mx-2 rounded-lg sm:py-10 sm:px-10 px-5 py-5 sm:mx-auto'>
                 <div className="">
                     <label htmlFor="url" className="block text-3xl mb-4 py-1 font-medium headingText">Paste your long link here</label>
                     <input
@@ -94,7 +99,7 @@ function URLComponent() {
 
                 {isAuthenticated && (
                     <div className="mt-2">
-                        <label htmlFor="customUrl" className="block text-lg mb-2 font-semibold">
+                        <label htmlFor="customUrl" className="block text-lg mb-2 font-semibold headingText">
                             Custom URL (optional)
                         </label>
                         <input
@@ -108,7 +113,7 @@ function URLComponent() {
                     </div>
                 )}
 
-                {err && <p className="text-red-400 text-sm mt-2">{err}</p>}
+                {localError && <p className="text-red-400 text-sm mt-2">{localError}</p>}
                 {error && <p className="text-red-400 text-sm mt-2">{error}</p>}
 
                 <button
@@ -119,7 +124,7 @@ function URLComponent() {
                 </button>
 
                 {generated && <div className="mt-2">
-                    <label htmlFor="customUrl" className="block text-lg mb-2 font-semibold">
+                    <label htmlFor="customUrl" className="block text-lg mb-2 font-semibold headingText">
                         Shorten URL
                     </label>
 
@@ -130,18 +135,18 @@ function URLComponent() {
                             value={shortUrl}
                             contentEditable='false'
                             readOnly
-                            className="block w-9/12 rounded-l bg-white px-3 py-2 text-base text-gray-900 placeholder:text-gray-400 sm:text-sm outline-none"
+                            className="block w-9/12 rounded-l bg-amber-100 px-3 py-3 text-base text-amber-700 sm:text-sm outline-none"
                         />
                         <button
                             onClick={handleCopyUrl}
-                            className={`px-4 py-1 border-l-2 border-l-gray-400 font-bold text-blue-900 cursor-pointer transition duration-400 ease-in-out rounded-r w-3/12        ${copyButtonText === "Copied!" ? 'bg-gray-400 text-white' : 'bg-white hover:bg-gray-400 hover:text-white'}`}
+                            className={`px-4 py-1 border-l-2 border-l-amber-400 font-bold text-amber-800 cursor-pointer transition duration-400 ease-in-out rounded-r w-3/12        ${copyButtonText === "Copied!" ? 'bg-amber-400' : 'bg-amber-200 '}`}
                         >
                             {copyButtonText}
                         </button>
                     </div>
                 </div>}
             </div >
-        </motion.div>
+        </div>
     );
 }
 

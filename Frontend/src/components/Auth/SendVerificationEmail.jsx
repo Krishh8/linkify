@@ -1,20 +1,20 @@
 import { useState } from "react";
 import axios from "axios";
 import { BASE_URL } from "../../constants";
-import { useNavigate } from "react-router";
-import { useSelector } from "react-redux"; // if email stored in redux
+import { useLocation, useNavigate } from "react-router";
 
 const SendVerificationEmail = () => {
+    const location = useLocation();
+    const { email } = location.state || {};
     const [loading, setLoading] = useState(false);
-    const [err, setErr] = useState("");
+    const [apiError, setApiError] = useState("");
     const [successMsg, setSuccessMsg] = useState("");
 
     const navigate = useNavigate();
-    const { email } = useSelector((state) => state.user); // get user email
 
     const handleSubmit = async () => {
         setLoading(true);
-        setErr("");
+        setApiError("");
         setSuccessMsg("");
 
         try {
@@ -28,7 +28,7 @@ const SendVerificationEmail = () => {
                 navigate("/login", { replace: true });
             }, 1500);
         } catch (error) {
-            setErr(error?.response?.data?.message || "Something went wrong");
+            setApiError(error?.response?.data?.message || "Something went wrong");
         } finally {
             setLoading(false);
         }
@@ -38,11 +38,11 @@ const SendVerificationEmail = () => {
         <div className="min-h-screen flex justify-center items-center flex-col gap-4 text-center px-6">
             <h2 className="text-3xl font-bold text-blue-900">Email Not Verified</h2>
             <p className="text-gray-600 max-w-md">
-                To continue, please verify your email address. We’ve sent you an email
-                with a verification link. If you didn’t receive it, click the button below to resend.
+                To continue, please verify your email address. We've sent you an email
+                with a verification link. If you didn't receive it, click the button below to resend.
             </p>
 
-            {err && <p className="text-red-400 text-sm">{err}</p>}
+            {apiError && <p className="text-red-400 text-sm">{apiError}</p>}
             {successMsg && <p className="text-green-500 text-sm">{successMsg}</p>}
 
             <button

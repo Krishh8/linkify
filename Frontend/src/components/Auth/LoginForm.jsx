@@ -1,5 +1,5 @@
 import { NavLink, useNavigate } from "react-router"
-import useLoginForm from "../../hooks/useLoginForm"
+import useForm from "../../hooks/useForm";
 import EmailInput from "./EmailInput"
 import PasswordInput from "./PasswordInput"
 import axios from 'axios'
@@ -7,8 +7,9 @@ import { BASE_URL } from "../../constants"
 import { useState } from "react"
 import { useDispatch } from "react-redux"
 import { setUser } from "../../redux/userSlice"
+import { showToast } from "../../utils/toast"
 
-export default function LoginForm() {
+function LoginForm() {
     const {
         email,
         password,
@@ -21,12 +22,12 @@ export default function LoginForm() {
         handleBlur,
         togglePasswordShow,
         validateForm,
-    } = useLoginForm()
+    } = useForm();
 
-    const navigate = useNavigate()
-    const dispatch = useDispatch()
-    const [err, setErr] = useState('')
-    const [showResend, setShowResend] = useState(false)  // NEW
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const [apiError, setApiError] = useState('');
+    const [showResend, setShowResend] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -38,34 +39,32 @@ export default function LoginForm() {
             const res = await axios.post(`${BASE_URL}/api/auth/login`, { email, password }, { withCredentials: true });
 
             const user = res.data?.user;
-            setErr('')
-            setShowResend(false)
-            dispatch(setUser(user))
-            navigate('/user/dashboard', { replace: true })
+            setApiError('');
+            setShowResend(false);
+            dispatch(setUser(user));
+            showToast({
+                type: "success",
+                message: "Login successful!",
+            });
+            navigate('/user/dashboard', { replace: true });
         }
-        catch (error) {
-            const errMsg = error.response?.data?.message || "Login Failed.";
-            setErr(errMsg)
-
-            if (errMsg === "Please verify your email first") {
-                setShowResend(true);   // Display resend button
+        catch (err) {
+            const errorMsg = err.response?.data?.message || "Login Failed.";
+            setApiError(errorMsg);
+            if (errorMsg === "Please verify your email first") {
+                setShowResend(true);
             }
         }
     }
 
-    const handleResend = async () => {
-        try {
-            const response = await axios.post(`${BASE_URL}/api/auth/send-email`, { email });
-            alert(response.data.message);
-        } catch (error) {
-            alert(error.response?.data?.message || "Failed to resend email");
-        }
+    const handleResend = () => {
+        navigate('/send-email', { state: { email: email } });
     };
 
     return (
         <form onSubmit={handleSubmit} className="mt-8 space-y-6">
 
-            {err && <p className="text-red-400 text-sm mb-1">{err}</p>}
+            {apiError && <p className="text-red-400 text-sm mb-1">{apiError}</p>}
 
             {showResend && (
                 <button
@@ -73,7 +72,7 @@ export default function LoginForm() {
                     onClick={handleResend}
                     className="text-blue-900 underline underline-offset-4 hover:font-medium"
                 >
-                    Resend verification email
+                    Verify Email
                 </button>
             )}
 
@@ -108,8 +107,10 @@ export default function LoginForm() {
                 Log In
             </button>
 
-            <div>Don't have account ? <NavLink to='/signup' className='text-blue-900 hover:underline hover:font-medium underline-offset-4'>Create new Account</NavLink></div>
+            <div className="md:hidden text-center">Don't have account ? <NavLink to='/signup' className='text-blue-900 hover:underline hover:font-medium underline-offset-4'>Create new Account</NavLink></div>
 
         </form>
-    )
+    );
 }
+
+export default LoginForm;

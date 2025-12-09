@@ -1,4 +1,4 @@
-import URLComponent from './URLComponent'
+import URLComponent from './URLComponent';
 
 function Home() {
     return (
@@ -24,5 +24,4 @@ function Home() {
     );
 }
 
-
-export default Home
+export default Home;

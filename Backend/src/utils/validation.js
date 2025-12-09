@@ -41,5 +41,34 @@ const validateUrlData = (req) => {
     }
 };
 
+const validateEmail = (req) => {
+    const { email } = req.body;
+    if (!email) {
+        throw new Error("Email is required.");
+    }
+    if (!validator.isEmail(email)) {
+        throw new Error("Not a valid email.");
+    }
+};
 
-module.exports = { validateSignUpData, validateLoginData, validateUrlData }
+const validatePasswordReset = (req) => {
+    const { newPassword, confirmPassword } = req.body;
+
+    if (!newPassword) {
+        throw new Error("New password is required.");
+    }
+
+    if (!confirmPassword) {
+        throw new Error("Confirm password is required.");
+    }
+
+    if (newPassword !== confirmPassword) {
+        throw new Error("Passwords do not match.");
+    }
+
+    if (!validator.isStrongPassword(newPassword)) {
+        throw new Error("Password not strong enough. Use 8+ characters, including uppercase, lowercase, number & symbol.");
+    }
+};
+
+module.exports = { validateSignUpData, validateLoginData, validateUrlData, validateEmail, validatePasswordReset }

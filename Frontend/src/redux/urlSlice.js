@@ -11,26 +11,32 @@ const urlSlice = createSlice({
     initialState,
     reducers: {
         setUrls(state, action) {
-            state.urls = action.payload;
+            state.urls = Array.isArray(action.payload) ? action.payload : [];
         },
         addUrl(state, action) {
-            state.urls.unshift(action.payload);
+            if (action.payload) {
+                state.urls.unshift(action.payload);
+            }
         },
-        editUrl: function (state, action) {
+        editUrl(state, action) {
+            if (!action.payload || !action.payload._id) {
+                return;
+            }
             const index = state.urls.findIndex(url => url._id === action.payload._id);
             if (index !== -1) {
                 state.urls[index] = action.payload;
             }
         },
         deleteUrl(state, action) {
-            state.urls = state.urls.filter(url => url._id !== action.payload);
+            if (action.payload) {
+                state.urls = state.urls.filter(url => url._id !== action.payload);
+            }
         },
-
         setLoading(state, action) {
-            state.loading = action.payload;
+            state.loading = Boolean(action.payload);
         },
         setError(state, action) {
-            state.error = action.payload;
+            state.error = action.payload ? String(action.payload) : null;
         },
     },
 });

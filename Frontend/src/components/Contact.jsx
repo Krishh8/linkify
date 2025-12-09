@@ -1,6 +1,7 @@
 import axios from 'axios';
-import { useState } from 'react'
+import { useState } from 'react';
 import { BASE_URL } from '../constants';
+import { showToast } from '../utils/toast';
 
 function Contact() {
     const [formData, setFormData] = useState({
@@ -8,7 +9,7 @@ function Contact() {
         email: "",
         message: ""
     });
-    const [err, setErr] = useState('')
+    const [error, setError] = useState('');
 
     const handleChange = (e) => {
         const { name, value } = e.target
@@ -20,20 +21,32 @@ function Contact() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setError('');
         const { email, name, message } = formData;
-        if (email.trim().length == 0 || name.trim().length == 0 || message.trim().length == 0) {
-            setErr("All fields are required.")
+        if (email.trim().length === 0 || name.trim().length === 0 || message.trim().length === 0) {
+            setError("All fields are required.");
             return;
         }
         try {
-            const res = await axios.post(`${BASE_URL}/api/contact`, formData, { withCredentials: true });
-            const data = res.data
-            console.log(data)
-        } catch (error) {
-            const errMsg = error.response?.data?.message || "Contact Failed.";
-            setErr(errMsg)
+            await axios.post(`${BASE_URL}/api/contact/send`, formData);
+            showToast({
+                type: "success",
+                message: "Message submitted successfully.",
+            });
+        } catch (err) {
+            const errorMsg = err.response?.data?.message || "Contact Failed.";
+            showToast({
+                type: "error",
+                message: errorMsg,
+            });
         }
-
+        finally {
+            setFormData({
+                name: "",
+                email: "",
+                message: ""
+            });
+        }
     };
 
     return (
@@ -45,12 +58,13 @@ function Contact() {
                 </p>
 
                 <form className="space-y-6" onSubmit={handleSubmit}>
-                    {err && <p className="text-red-400 text-sm mb-1">{err}</p>}
+                    {error && <p className="text-red-400 text-sm mb-1">{error}</p>}
                     <div>
                         <label className="block mb-1 font-medium">Your Name</label>
                         <input
                             type="text"
                             name="name"
+                            value={formData.name}
                             className="w-full border border-amber-300 rounded px-4 py-2 focus:outline-none focus:ring focus:ring-amber-300"
                             placeholder="Enter your name"
                             onChange={handleChange}
@@ -63,6 +77,7 @@ function Contact() {
                         <input
                             type="email"
                             name="email"
+                            value={formData.email}
                             className="w-full border border-amber-300 rounded px-4 py-2 focus:outline-none focus:ring focus:ring-amber-300"
                             placeholder="Enter your email"
                             onChange={handleChange}
@@ -77,6 +92,7 @@ function Contact() {
                             placeholder="Your message..."
                             onChange={handleChange}
                             name="message"
+                            value={formData.message}
                             required
                         ></textarea>
                     </div>
@@ -91,12 +107,13 @@ function Contact() {
 
                 <div className="mt-8 text-center text-sm subHeadingText">
                     Or email us directly at:{" "}
-                    <a href="mailto:support@linkify.com" className="text-yellow-300 underline">
-                        support@linkify.com
+                    <a href="mailto:linkify.help@gmail.com" className="text-yellow-300 underline">
+                        linkify.help@gmail.com
                     </a>
                 </div>
-            </div></div>
-    )
+            </div>
+        </div>
+    );
 }
 
-export default Contact
+export default Contact;

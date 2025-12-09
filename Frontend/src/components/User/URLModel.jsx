@@ -1,16 +1,16 @@
-"use client"
+import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import axios from "axios";
+import { deleteUrl, editUrl, setError, setLoading } from "../../redux/urlSlice";
+import { BASE_URL } from "../../constants";
+import { Clock, Copy } from "lucide-react";
+import URLModelSkeleton from "./URLModelSkeleton";
+import { showToast } from "../../utils/toast";
 
-import { useState } from "react"
-import { useDispatch, useSelector } from "react-redux"
-import axios from "axios"
-import { deleteUrl, editUrl, setError, setLoading } from "../../redux/urlSlice"
-import { BASE_URL } from "../../constants"
-import { Clock } from "lucide-react"
-
-const URLModel = ({ link }) => {
-    const dispatch = useDispatch()
-    const { _id, originalUrl, shortUrl, clickCount, expiresAt } = link
-    const { loading, error } = useSelector((state) => state.urls)
+function URLModel({ link }) {
+    const dispatch = useDispatch();
+    const { _id, originalUrl, shortUrl, clickCount, expiresAt } = link;
+    const { loading } = useSelector((state) => state.urls);
 
     const [orgUrl, setOrgUrl] = useState(originalUrl)
     const [shUrl, setShUrl] = useState(shortUrl)
@@ -20,17 +20,24 @@ const URLModel = ({ link }) => {
         dispatch(setLoading(true))
         dispatch(setError(null))
         try {
-            const res = await axios.put(`${BASE_URL}/api/url/${_id}`, { originalUrl: orgUrl, shortUrl: shUrl }, { withCredentials: true })
-            const updated = res.data?.url
-            console.log(res.data?.message)
-            dispatch(editUrl(updated))
-            dispatch(setError(null))
-            setEditable(false)
-        } catch (error) {
-            const errMsg = error.response?.data?.message || "URL updating failed."
-            dispatch(setError(errMsg))
+            const res = await axios.put(`${BASE_URL}/api/url/${_id}`, { originalUrl: orgUrl, shortUrl: shUrl }, { withCredentials: true });
+            const updated = res.data?.url;
+            dispatch(editUrl(updated));
+            dispatch(setError(null));
+            setEditable(false);
+            showToast({
+                type: "success",
+                message: "URL updated successfully.",
+            });
+        } catch (err) {
+            const errorMsg = err.response?.data?.message || "URL updating failed.";
+            dispatch(setError(errorMsg));
+            showToast({
+                type: "error",
+                message: errorMsg,
+            });
         } finally {
-            dispatch(setLoading(false))
+            dispatch(setLoading(false));
         }
     }
 
@@ -48,20 +55,23 @@ const URLModel = ({ link }) => {
         dispatch(setLoading(true))
         dispatch(setError(null))
         try {
-            const res = await axios.delete(`${BASE_URL}/api/url/${_id}`, { withCredentials: true })
-            console.log(res.data?.message)
-            dispatch(deleteUrl(_id))
-            dispatch(setError(null))
-        } catch (error) {
-            const errMsg = error.response?.data?.message || "URL deletion failed."
-            dispatch(setError(errMsg))
+            await axios.delete(`${BASE_URL}/api/url/${_id}`, { withCredentials: true });
+            dispatch(deleteUrl(_id));
+            dispatch(setError(null));
+            showToast({
+                type: "success",
+                message: "URL deleted successfully.",
+            });
+        } catch (err) {
+            const errorMsg = err.response?.data?.message || "URL deletion failed.";
+            dispatch(setError(errorMsg));
+            showToast({
+                type: "error",
+                message: errorMsg,
+            });
         } finally {
-            dispatch(setLoading(false))
+            dispatch(setLoading(false));
         }
-    }
-
-    const copyToClipboard = (text) => {
-        navigator.clipboard.writeText(text)
     }
 
     const formatDate = (dateString) => {
@@ -78,17 +88,25 @@ const URLModel = ({ link }) => {
 
     if (loading) {
         return (
-            <div className="w-full mb-4 border rounded-lg shadow-sm overflow-hidden">
-                <div className="p-4 animate-pulse">
-                    <div className="h-8 bg-gray-200 rounded w-3/4 mb-4"></div>
-                    <div className="h-4 bg-gray-200 rounded w-full mb-3"></div>
-                    <div className="h-4 bg-gray-200 rounded w-2/3 mb-3"></div>
-                    <div className="h-4 bg-gray-200 rounded w-1/2 mb-3"></div>
-                    <div className="h-10 bg-gray-200 rounded w-full mt-4"></div>
-                </div>
-            </div>
+            <URLModelSkeleton />
         )
     }
+
+    const handleCopyUrl = async (shortUrl) => {
+        try {
+            await navigator.clipboard.writeText(shortUrl);
+            showToast({
+                type: "success",
+                message: "URL copied to clipboard.",
+            });
+        } catch (err) {
+            const errorMsg = err.response?.data?.message || "Failed to copy URL.";
+            showToast({
+                type: "error",
+                message: errorMsg,
+            });
+        }
+    };
 
     return (
         // <div className="border rounded-lg my-2 sm:my-0 shadow-sm w-full sm:w-1/2 md:w-1/3">
@@ -155,24 +173,11 @@ const URLModel = ({ link }) => {
                                     {`${BASE_URL}/api/url/${shortUrl}`}
                                 </div>
                                 <button
-                                    onClick={() => copyToClipboard(`${BASE_URL}/api/url/${shortUrl}`)}
+                                    onClick={() => handleCopyUrl(`${BASE_URL}/api/url/${shortUrl}`)}
                                     title="Copy to clipboard"
-                                    className="p-2 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+                                    className="p-2 border border-amber-500 rounded-md bg-amber-400 hover:bg-amber-500 transition-colors"
                                 >
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        className="h-4 w-4"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                    >
-                                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-                                        <polyline points="15 3 21 3 21 9" />
-                                        <line x1="10" y1="14" x2="21" y2="3" />
-                                    </svg>
+                                    <Copy size={20} />
                                 </button>
                             </div>
                         </div>
@@ -227,7 +232,7 @@ const URLModel = ({ link }) => {
                 )}
             </div>
         </div>
-    )
+    );
 }
 
-export default URLModel
+export default URLModel;

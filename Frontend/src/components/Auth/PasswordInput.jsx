@@ -1,7 +1,6 @@
-// components/Auth/PasswordInput.jsx
-import { Eye, EyeOff } from "lucide-react"
+import { Eye, EyeOff } from "lucide-react";
 
-export default function PasswordInput({ value, onChange, onBlur, error, touched, show, toggleShow }) {
+function PasswordInput({ value, onChange, onBlur, error, touched, show, toggleShow }) {
     return (
         <div>
             <label htmlFor="password" className="block text-lg font-medium text-blue-900">
@@ -10,7 +9,7 @@ export default function PasswordInput({ value, onChange, onBlur, error, touched,
             <div className="relative">
                 <input
                     type={show ? "text" : "password"}
-                    id="password"
+                    // id="password"
                     value={value}
                     placeholder="Enter your password"
                     onChange={(e) => onChange(e.target.value)}
@@ -27,5 +26,7 @@ export default function PasswordInput({ value, onChange, onBlur, error, touched,
             </div>
             {error && touched && <p className="text-red-400 text-sm mt-1">{error}</p>}
         </div>
-    )
+    );
 }
+
+export default PasswordInput;

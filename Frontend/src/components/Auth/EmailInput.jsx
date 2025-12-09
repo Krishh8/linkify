@@ -1,5 +1,4 @@
-// components/Auth/EmailInput.jsx
-export default function EmailInput({ value, onChange, onBlur, error, touched }) {
+function EmailInput({ value, onChange, onBlur, error, touched }) {
     return (
         <div>
             <label htmlFor="email" className="block text-lg font-medium text-blue-900">
@@ -7,7 +6,7 @@ export default function EmailInput({ value, onChange, onBlur, error, touched }) 
             </label>
             <input
                 type="email"
-                id="email"
+                // id="email"
                 value={value}
                 placeholder="Enter your email"
                 onChange={(e) => onChange(e.target.value)}
@@ -17,5 +16,7 @@ export default function EmailInput({ value, onChange, onBlur, error, touched }) 
             />
             {error && touched && <p className="text-red-400 text-sm mt-1">{error}</p>}
         </div>
-    )
+    );
 }
+
+export default EmailInput;

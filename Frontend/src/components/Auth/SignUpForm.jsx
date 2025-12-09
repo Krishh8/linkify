@@ -1,12 +1,13 @@
 import { NavLink, useNavigate } from "react-router"
-import useLoginForm from "../../hooks/useLoginForm"
+import useForm from "../../hooks/useForm";
 import EmailInput from "./EmailInput"
 import PasswordInput from "./PasswordInput"
 import { BASE_URL } from "../../constants"
 import { useState } from "react"
 import axios from "axios"
+import { showToast } from "../../utils/toast";
 
-export default function SignUpForm() {
+function SignUpForm() {
     const {
         email,
         password,
@@ -19,10 +20,10 @@ export default function SignUpForm() {
         handleBlur,
         togglePasswordShow,
         validateForm,
-    } = useLoginForm()
+    } = useForm();
 
-    const navigate = useNavigate()
-    const [err, setErr] = useState('')
+    const navigate = useNavigate();
+    const [apiError, setApiError] = useState('');
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -31,21 +32,28 @@ export default function SignUpForm() {
         if (!validateForm()) return;
 
         try {
-            console.log("Submitting:", { email, password })
-            const res = await axios.post(`${BASE_URL}/api/auth/signup`, { email, password }, { withCredentials: true });
-            console.log(res.data?.message)
-            setErr("")
-            return navigate('/login');
+            await axios.post(`${BASE_URL}/api/auth/signup`, { email, password }, { withCredentials: true });
+            setApiError("");
+            showToast({
+                type: "success",
+                message: "Sign up successful!",
+            });
+            navigate('/login', { replace: true });
         }
-        catch (error) {
-            const errMsg = error.response?.data?.message || "Sign up Failed.";
-            setErr(errMsg)
+        catch (err) {
+            const errorMsg = err.response?.data?.message || "Sign up Failed.";
+            setApiError(errorMsg);
+            showToast({
+                type: "error",
+                message: errorMsg,
+                autoClose: 4000,
+            });
         }
     }
 
     return (
         <form onSubmit={handleSubmit} className="mt-8 space-y-6">
-            {err && <p className="text-red-400 text-sm mb-1">{err}</p>}
+            {apiError && <p className="text-red-400 text-sm mb-1">{apiError}</p>}
 
             <EmailInput
                 value={email}
@@ -72,7 +80,9 @@ export default function SignUpForm() {
                 Create account
             </button>
 
-            <div>Already have account ? <NavLink to='/login' className='text-blue-900 hover:underline hover:font-medium  underline-offset-4'>Login</NavLink></div>
+            <div className="md:hidden text-center">Already have account ? <NavLink to='/login' className='text-blue-900 hover:underline hover:font-medium  underline-offset-4'>Login</NavLink></div>
         </form>
-    )
+    );
 }
+
+export default SignUpForm;

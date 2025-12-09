@@ -1,5 +1,5 @@
-import { aboutData } from '../constants'
-import Box from './Box'
+import { aboutData } from '../constants';
+import Box from './Box';
 
 function About() {
     return (
@@ -26,7 +26,7 @@ function About() {
 
 
         </div>
-    )
+    );
 }
 
-export default About
+export default About;

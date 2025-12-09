@@ -1,16 +1,13 @@
 import { BASE_URL } from "../../constants";
 import { useState } from "react";
 import EmailInput from "./EmailInput";
-import forgotPasswordImage from "../../assets/forgotPassword.jpg";
 import axios from "axios";
-import useLoginForm from "../../hooks/useLoginForm";
-import { useNavigate } from "react-router";
+import useForm from "../../hooks/useForm";
 
-const ForgotPassword = () => {
+function ForgotPassword() {
     const [loading, setLoading] = useState(false);
     const [successMsg, setSuccessMsg] = useState("");
-    const [err, setErr] = useState("");
-    const navigate = useNavigate()
+    const [apiError, setApiError] = useState("");
 
     const {
         email,
@@ -19,7 +16,7 @@ const ForgotPassword = () => {
         handleEmailChange,
         handleBlur,
         setTouched,
-    } = useLoginForm();
+    } = useForm();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -28,7 +25,7 @@ const ForgotPassword = () => {
         if (email.trim().length === 0 || error.email) return;
 
         setLoading(true);
-        setErr("");
+        setApiError("");
         setSuccessMsg("");
 
         try {
@@ -36,11 +33,11 @@ const ForgotPassword = () => {
                 email,
             });
 
-            setSuccessMsg(res.data.message || "Password reset email sent!");
-            navigate('/reset-password')
-        } catch (error) {
-            setErr(
-                error?.response?.data?.message ||
+            setSuccessMsg(res.data.message || "Password reset email sent! Check your mailbox.");
+            // navigate('/reset-password');
+        } catch (err) {
+            setApiError(
+                err?.response?.data?.message ||
                 "Something went wrong. Please try again!"
             );
         } finally {
@@ -50,18 +47,16 @@ const ForgotPassword = () => {
 
     return (
         <div className="flex min-h-screen justify-center items-center">
-            <div className="hidden md:flex justify-center items-center border-r-2 border-r-blue-900 h-screen w-1/2">
-                <img
-                    src={forgotPasswordImage}
-                    alt="forgot-password"
-                    className="h-full w-full object-cover"
-                />
+            <div className="hidden md:flex md:flex-col gap-4 justify-center items-center bg-gradient-to-tl from-yellow-500 to-red-400 rounded-r-[0%] h-screen w-1/2">
+                <h2 className="text-5xl text-blue-900 font-bold">Forgot Password</h2>
+                <p className="text-xl text-blue-900">Enter your email to reset your password.</p>
             </div>
 
             <div className="w-full md:w-1/2 flex flex-col justify-center items-center px-6 py-20">
-                <h2 className="text-3xl font-bold text-blue-900">Forgot Password</h2>
+                <h2 className="text-6xl font-medium pb-10 md:pb-5 logoText">linkify</h2>
+                <h2 className="md:hidden text-3xl font-bold text-blue-900">Forgot Password</h2>
 
-                {err && <p className="text-red-400 text-sm mt-4">{err}</p>}
+                {apiError && <p className="text-red-400 text-sm mt-4">{apiError}</p>}
                 {successMsg && <p className="text-green-500 text-sm mt-4">{successMsg}</p>}
 
                 <form onSubmit={handleSubmit} className="mt-8 space-y-6 w-full max-w-md">
@@ -84,6 +79,6 @@ const ForgotPassword = () => {
             </div>
         </div>
     );
-};
+}
 
 export default ForgotPassword;

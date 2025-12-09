@@ -16,10 +16,12 @@ app.use(express.json());
 const authRouter = require('./routes/authRouter');
 const urlRouter = require('./routes/urlRouter');
 const userRouter = require('./routes/userRouter');
+const contactRouter = require('./routes/contactRouter');
 
 app.use('/api/auth', authRouter);
 app.use('/api/url', urlRouter);
 app.use('/api/user', userRouter);
+app.use('/api/contact', contactRouter);
 
 connectDB().
     then(() => {

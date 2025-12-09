@@ -1,22 +1,24 @@
-import React, { useState } from "react";
-import resetPasswordImage from "../../assets/resetPassword.avif";
+import { useState } from "react";
 import PasswordInput from "./PasswordInput";
 import axios from "axios";
 import { BASE_URL } from "../../constants";
 import { useParams, useNavigate } from "react-router";
-import useLoginForm from "../../hooks/useLoginForm";
+import useForm from "../../hooks/useForm";
 
-const ResetPassword = () => {
+function ResetPassword() {
     const [confirmPassword, setConfirmPassword] = useState("");
     const [confirmTouched, setConfirmTouched] = useState(false);
     const [confirmError, setConfirmError] = useState("");
+    const [confirmPasswordShow, setConfirmPasswordShow] = useState(false);
 
     const [loading, setLoading] = useState(false);
-    const [err, setErr] = useState("");
+    const [apiError, setApiError] = useState("");
     const [successMsg, setSuccessMsg] = useState("");
 
     const navigate = useNavigate();
-    const { token } = useParams(); // reset/:token
+    const { token } = useParams();
+
+    const toggleConfirmPasswordShow = () => setConfirmPasswordShow(prev => !prev);
 
     const {
         password,
@@ -26,8 +28,7 @@ const ResetPassword = () => {
         handlePasswordChange,
         handleBlur,
         togglePasswordShow,
-        validateForm,
-    } = useLoginForm();
+    } = useForm();
 
     const validateConfirmPassword = (value) => {
         if (!value.trim()) return "Confirm password is required";
@@ -35,23 +36,34 @@ const ResetPassword = () => {
         return "";
     };
 
+    const validatePasswordOnly = () => {
+        if (!password.trim()) {
+            return false;
+        }
+        return true;
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const isValid = validateForm();
-        const confirmErr = validateConfirmPassword(confirmPassword);
 
+        // Mark password as touched and validate
+        handleBlur("password");
+        const isValid = validatePasswordOnly();
+
+        // Validate confirm password
+        const confirmErr = validateConfirmPassword(confirmPassword);
         setConfirmError(confirmErr);
         setConfirmTouched(true);
 
         if (!isValid || confirmErr) return;
 
         setLoading(true);
-        setErr("");
+        setApiError("");
         setSuccessMsg("");
 
         try {
             const res = await axios.post(`${BASE_URL}/api/auth/reset-password/${token}`, {
-                password,
+                newPassword: password, confirmPassword: confirmPassword
             });
 
             setSuccessMsg(res.data.message || "Password reset successfully!");
@@ -59,8 +71,8 @@ const ResetPassword = () => {
             setTimeout(() => {
                 navigate("/login", { replace: true });
             }, 1500);
-        } catch (error) {
-            setErr(error?.response?.data?.message || "Something went wrong");
+        } catch (err) {
+            setApiError(err?.response?.data?.message || "Something went wrong");
         } finally {
             setLoading(false);
         }
@@ -68,14 +80,17 @@ const ResetPassword = () => {
 
     return (
         <div className="flex min-h-screen justify-center items-center">
-            <div className="hidden md:flex justify-center items-center border-r-2 border-r-blue-900 h-screen w-1/2">
-                <img src={resetPasswordImage} alt="reset-password" className="h-2/3 w-full" />
+            <div className="hidden md:flex md:flex-col gap-4 justify-center items-center bg-gradient-to-tl from-yellow-500 to-red-400 rounded-r-[0%] h-screen w-1/2">
+                <h2 className="text-5xl text-blue-900 font-bold">Reset Password</h2>
+                <p className="text-xl text-blue-900">Set your new password to continue.</p>
             </div>
 
-            <div className="w-full md:w-1/2 flex flex-col justify-center items-center px-6 py-20">
-                <h2 className="text-3xl font-bold text-blue-900">Reset Password</h2>
 
-                {err && <p className="text-red-400 text-sm mt-2">{err}</p>}
+            <div className="w-full md:w-1/2 flex flex-col justify-center items-center px-6 py-20">
+                <h2 className="text-6xl font-medium pb-10 md:pb-5 logoText">linkify</h2>
+                <h2 className="md:hidden text-3xl font-bold text-blue-900">Reset Password</h2>
+
+                {apiError && <p className="text-red-400 text-sm mt-2">{apiError}</p>}
                 {successMsg && <p className="text-green-500 text-sm mt-2">{successMsg}</p>}
 
                 <form onSubmit={handleSubmit} className="mt-8 space-y-6 w-full max-w-md">
@@ -102,8 +117,8 @@ const ResetPassword = () => {
                         }}
                         error={confirmError}
                         touched={confirmTouched}
-                        show={passwordShow}
-                        toggleShow={togglePasswordShow}
+                        show={confirmPasswordShow}
+                        toggleShow={toggleConfirmPasswordShow}
                     />
 
                     <button
@@ -117,6 +132,6 @@ const ResetPassword = () => {
             </div>
         </div>
     );
-};
+}
 
 export default ResetPassword;
